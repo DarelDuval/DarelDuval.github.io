@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darel Duval Jeutsop Felefack — Softwareentwickler</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --border: #1e1e2e;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --text: #e8e8f0;
+    --muted: #6b6b80;
+  }
+ 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+ 
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+ 
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+ 
+  /* ── GLOW BLOBS ── */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 { width: 500px; height: 500px; background: rgba(108,99,255,0.12); top: -100px; left: -100px; }
+  .blob-2 { width: 400px; height: 400px; background: rgba(255,101,132,0.08); bottom: 100px; right: -50px; }
+ 
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+ 
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+ 
+  .nav-logo span { color: var(--accent); }
+ 
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+ 
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 120px 48px 80px;
+    position: relative;
+    z-index: 1;
+  }
+ 
+  .hero-content { max-width: 800px; }
+ 
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(108,99,255,0.1);
+    border: 1px solid rgba(108,99,255,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 32px;
+    animation: fadeUp 0.6s ease both;
+  }
+ 
+  .hero-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+ 
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+ 
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+ 
+  h1 .accent { color: var(--accent); }
+  h1 .accent2 { color: var(--accent2); }
+ 
+  .hero-desc {
+    font-size: 18px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 48px;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+ 
+  .hero-cta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+ 
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+ 
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #7c74ff; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,0.3); }
+ 
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+ 
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+ 
+  /* ── SECTION ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 48px;
+  }
+ 
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+ 
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    margin-bottom: 60px;
+  }
+ 
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+ 
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+ 
+  .skill-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .skill-card:hover::before { transform: scaleX(1); }
+ 
+  .skill-icon {
+    width: 44px; height: 44px;
+    background: rgba(108,99,255,0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+ 
+  .skill-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+ 
+  .skill-card p {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+ 
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+  }
+ 
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .project-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(108,99,255,0.15);
+  }
+ 
+  .project-tag {
+    display: inline-block;
+    background: rgba(108,99,255,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 20px;
+  }
+ 
+  .project-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 12px;
+  }
+ 
+  .project-card p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+ 
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+ 
+  .tech-tag {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+ 
+  .project-links { display: flex; gap: 12px; }
+ 
+  .project-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: gap 0.2s;
+  }
+  .project-link:hover { gap: 10px; }
+ 
+  /* ── ABOUT ── */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+ 
+  .about-text p {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+ 
+  .about-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+ 
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+  }
+ 
+  .stat-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -2px;
+  }
+ 
+  .stat-label {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+ 
+  /* ── CONTACT ── */
+  .contact-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
+ 
+  .contact-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(108,99,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+ 
+  .contact-wrapper h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+  }
+ 
+  .contact-wrapper p {
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-size: 16px;
+  }
+ 
+  .contact-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+ 
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 40px 48px;
+    color: var(--muted);
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+ 
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 0 48px;
+  }
+ 
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    section { padding: 60px 24px; }
+    .about-grid { grid-template-columns: 1fr; }
+    .contact-wrapper { padding: 40px 24px; }
+  }
+</style>
+</head>
+<body>
+ 
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+ 
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Darel<span>.</span></div>
+  <div class="nav-links">
+    <a href="#about">Über mich</a>
+    <a href="#skills">Kenntnisse</a>
+    <a href="#projects">Projekte</a>
+    <a href="#contact">Kontakt</a>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">B.Sc. Informatik · THM Gießen · Verfügbar</div>
+    <h1>
+      Darel Duval<br>
+      <span class="accent">Jeutsop</span><br>
+      <span class="accent2">Felefack.</span>
+    </h1>
+    <p class="hero-desc">
+      Informatik-Student an der THM Gießen, leidenschaftlich für
+      <strong style="color: var(--accent)">Datenanalyse</strong> und
+      <strong style="color: var(--accent2)">Cloud Computing</strong> —
+      Rohdaten in wertvolle Erkenntnisse verwandeln und
+      skalierbare Systeme in der Cloud aufbauen.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">Projekte ansehen →</a>
+      <a href="#contact" class="btn btn-ghost">Kontakt aufnehmen</a>
+    </div>
+  </div>
+</div>
+ 
+<div class="divider"></div>
+ 
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">Was ich kann</div>
+  <div class="section-title">Kenntnisse & Technologien</div>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-icon">📊</div>
+      <h3>Datenanalyse</h3>
+      <p>Statistisches Denken, Datenexploration, Hypothesentests und Visualisierung. Fähigkeit, aussagekräftige Erkenntnisse aus komplexen Datensätzen zu gewinnen.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">☁️</div>
+      <h3>Cloud Computing</h3>
+      <p>Grundlagen der Cloud-Architektur, Deployment und skalierbarem Systemdesign. Fokus auf zuverlässige und sichere cloudbasierte Anwendungen.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">☕</div>
+      <h3>Java</h3>
+      <p>Fundierte Java-Kenntnisse — objektorientierte Programmierung, Entwurfsmuster, Datenstrukturen, Algorithmen und Best Practices der Softwareentwicklung.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🐍</div>
+      <h3>Python</h3>
+      <p>Datenverarbeitung, Scripting und Automatisierung. Erfahrung mit Bibliotheken wie Pandas für Datenmanipulation und -analyse.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🗄️</div>
+      <h3>Datenbanken & SQL</h3>
+      <p>Relationales Datenbankdesign, SQL-Abfragen, Datenmodellierung und -verwaltung. Solide Grundlage für Data-Engineering-Workflows.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🔒</div>
+      <h3>IT-Sicherheit</h3>
+      <p>Grundlagen der Kryptographie, Software- und Systemsicherheit. Fähigkeit, sichere und zuverlässige Systeme zu entwerfen.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">⚙️</div>
+      <h3>Software Engineering</h3>
+      <p>Clean-Code-Prinzipien, Testen (JUnit), Versionskontrolle (Git), Build-Automatisierung (Gradle) und agile Entwicklungspraktiken.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🧮</div>
+      <h3>Mathematik & Statistik</h3>
+      <p>Lineare Algebra, Analysis, Diskrete Mathematik und Wahrscheinlichkeitsrechnung — die analytische Grundlage für Data Science und Machine Learning.</p>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🔬</div>
+      <h3>Theoretische Informatik</h3>
+      <p>Formale Sprachen, Automatentheorie, Compilerbau, Rechnerarchitektur und Grundlagen der Betriebssysteme.</p>
+    </div>
+  </div>
+ 
+</section>
+ 
+<div class="divider"></div>
+ 
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">Was ich gebaut habe</div>
+  <div class="section-title">Projekte</div>
+  <div class="projects-grid">
+ 
+    <div class="project-card">
+      <div class="project-tag">COMPILERBAU · THM GISSEN</div>
+      <h3>TiEL++ Interpreter</h3>
+      <p>
+        Erweiterung eines vollständigen Interpreters für die Lehrsprache TiEL
+        um Arrays und Objektorientierung. Alle Compilerphasen implementiert —
+        vom Scanner bis zum Evaluator.
+      </p>
+      <div class="project-tech">
+        <span class="tech-tag">Java 21</span>
+        <span class="tech-tag">Gradle</span>
+        <span class="tech-tag">JUnit 5</span>
+        <span class="tech-tag">AST</span>
+        <span class="tech-tag">OOP</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/DarelDuval" class="project-link">GitHub →</a>
+      </div>
+    </div>
+ 
+    <div class="project-card">
+      <div class="project-tag">PORTFOLIO</div>
+      <h3>Portfolio Website</h3>
+      <p>
+        Diese Website — gebaut mit reinem HTML, CSS und JavaScript.
+        Dunkles Theme, flüssige Animationen, vollständig responsives Design.
+      </p>
+      <div class="project-tech">
+        <span class="tech-tag">HTML</span>
+        <span class="tech-tag">CSS</span>
+        <span class="tech-tag">JavaScript</span>
+        <span class="tech-tag">GitHub Pages</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/DarelDuval/DarelDuval.github.io" class="project-link">GitHub →</a>
+      </div>
+    </div>
+ 
+  </div>
+</section>
+ 
+<div class="divider"></div>
+ 
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-label">Wer ich bin</div>
+  <div class="section-title">Über mich</div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>
+        Ich bin Informatik-Student an der <strong>THM Gießen</strong>,
+        leidenschaftlich für <strong>Datenanalyse</strong> und <strong>Cloud Computing</strong>.
+        Ich löse gerne komplexe Probleme und verwandle Rohdaten in
+        verwertbare Erkenntnisse.
+      </p>
+      <p>
+        Mein akademischer Hintergrund hat mir fundierte Kenntnisse in
+        Programmierung, Mathematik, Datenbanken, Sicherheit und Software Engineering
+        vermittelt — ein vielseitiges Kompetenzprofil für robuste, datengetriebene Lösungen.
+      </p>
+      <p>
+        Ich suche derzeit nach Möglichkeiten, mich als
+        <strong>Data Analyst</strong> oder <strong>Cloud Engineer</strong>
+        weiterzuentwickeln und einen echten Beitrag zu leisten.
+      </p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-card">
+        <div class="stat-number">Java</div>
+        <div class="stat-label">Hauptsprache</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">Python</div>
+        <div class="stat-label">Datensprache</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">THM</div>
+        <div class="stat-label">Hochschule</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">2023</div>
+        <div class="stat-label">B.Sc. begonnen</div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<div class="divider"></div>
+ 
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-wrapper">
+    <h2>Lass uns zusammenarbeiten</h2>
+    <p>Open for internships and student jobs in Data Analysis & Cloud Computing.</p>
+    <div class="contact-links">
+      <a href="https://github.com/DarelDuval" class="btn btn-primary">GitHub →</a>
+      <a href="mailto:your-email@thm.de" class="btn btn-ghost">E-Mail schreiben</a>
+    </div>
+  </div>
+</section>
+ 
+<footer>
+  <p>Erstellt von Darel Duval Jeutsop Felefack · 2026</p>
+</footer>
+ 
+</body>
+</html>
